@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mac Remote">
+    <meta name="theme-color" content="#000000">
+    <title>Mac Remote</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/css/xterm.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="manifest" href="/static/manifest.json">
+</head>
+<body>
+
+<!-- Login Screen -->
+<div id="login-screen">
+    <h1>Mac Remote</h1>
+    <p>Enter the PIN shown on your Mac</p>
+    <div class="pin-input-group" id="pin-group">
+        <input class="pin-digit" type="tel" maxlength="1" inputmode="numeric" autocomplete="off">
+        <input class="pin-digit" type="tel" maxlength="1" inputmode="numeric" autocomplete="off">
+        <input class="pin-digit" type="tel" maxlength="1" inputmode="numeric" autocomplete="off">
+        <input class="pin-digit" type="tel" maxlength="1" inputmode="numeric" autocomplete="off">
+        <input class="pin-digit" type="tel" maxlength="1" inputmode="numeric" autocomplete="off">
+        <input class="pin-digit" type="tel" maxlength="1" inputmode="numeric" autocomplete="off">
+    </div>
+    <div id="login-error"></div>
+    <button class="btn btn-primary" id="login-btn">Login</button>
+</div>
+
+<!-- App Shell -->
+<div id="app-shell">
+    <header class="app-header">
+        <h2>Terminal</h2>
+        <div class="header-actions">
+            <button class="btn btn-sm btn-danger" id="logout-btn">Logout</button>
+        </div>
+    </header>
+    <div id="terminal-container"></div>
+    <div id="mobile-input-bar" class="mobile-input-bar hidden">
+        <div class="input-toolbar">
+            <button class="tool-btn" data-key="\x03">C-c</button>
+            <button class="tool-btn" data-key="\x04">C-d</button>
+            <button class="tool-btn" data-key="\x1a">C-z</button>
+            <button class="tool-btn" data-key="\x1b">Esc</button>
+            <button class="tool-btn" data-key="\x09">Tab</button>
+            <button class="tool-btn" data-key="\x1b[A">&#9650;</button>
+            <button class="tool-btn" data-key="\x1b[B">&#9660;</button>
+            <button class="tool-btn" data-key="\x1b[D">&#9664;</button>
+            <button class="tool-btn" data-key="\x1b[C">&#9654;</button>
+        </div>
+        <input type="text" id="mobile-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="send" placeholder="Type here...">
+    </div>
+</div>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/lib/xterm.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.11.0/lib/addon-fit.js"></script>
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+<script src="/static/js/app.js"></script>
+<script src="/static/js/terminal.js"></script>
+</body>
+</html>

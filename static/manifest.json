@@ -1,0 +1,9 @@
+{
+  "name": "Mac Remote Control",
+  "short_name": "Mac Remote",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "description": "Control your Mac remotely from iPhone"
+}
