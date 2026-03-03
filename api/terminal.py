@@ -6,13 +6,24 @@ import fcntl
 import termios
 import signal as sig
 import subprocess
-from flask import request
+from flask import request, session
 from flask_socketio import emit, disconnect
 
 # Single persistent shell — survives WebSocket disconnects
 _shell = None       # {"fd": master_fd, "proc": Popen} or None
 _active_sid = None  # WebSocket sid currently attached
 _reader_running = False
+# sid -> token mapping for WebSocket session validation
+_sid_tokens: dict[str, str] = {}
+
+
+def _verify_ws_session(sid: str) -> bool:
+    """WebSocketイベントごとにセッション有効性を再検証。"""
+    from auth import is_authenticated_by_token, is_authenticated
+    token = _sid_tokens.get(sid)
+    if token:
+        return is_authenticated_by_token(token)
+    return is_authenticated()
 
 
 def register_handlers(socketio):
@@ -20,20 +31,28 @@ def register_handlers(socketio):
     @socketio.on("connect")
     def on_connect(auth_data=None):
         from auth import is_authenticated, is_authenticated_by_token
+        sid = request.sid
         # Try token auth first (cross-origin from YUA)
         if auth_data and isinstance(auth_data, dict):
             token = auth_data.get("token")
             if token and is_authenticated_by_token(token):
+                _sid_tokens[sid] = token
                 return
         # Fall back to cookie-based session auth
-        if not is_authenticated():
-            disconnect()
+        if is_authenticated():
+            token = session.get("auth_token")
+            if token:
+                _sid_tokens[sid] = token
             return
+        disconnect()
 
     @socketio.on("ready")
     def on_ready(data):
         global _shell, _active_sid, _reader_running
         sid = request.sid
+        if not _verify_ws_session(sid):
+            disconnect()
+            return
         rows = int(data.get("rows") or 24)
         cols = int(data.get("cols") or 80)
 
@@ -88,13 +107,19 @@ def register_handlers(socketio):
     @socketio.on("disconnect")
     def on_disconnect():
         global _active_sid
-        if _active_sid == request.sid:
+        sid = request.sid
+        if _active_sid == sid:
             _active_sid = None
+        _sid_tokens.pop(sid, None)
         # Shell stays alive — don't close fd or kill process
 
     @socketio.on("input")
     def on_input(data):
-        if _shell and _active_sid == request.sid:
+        sid = request.sid
+        if _shell and _active_sid == sid:
+            if not _verify_ws_session(sid):
+                disconnect()
+                return
             try:
                 os.write(_shell["fd"], data.encode())
             except OSError:
@@ -102,7 +127,11 @@ def register_handlers(socketio):
 
     @socketio.on("resize")
     def on_resize(data):
-        if _shell and _active_sid == request.sid:
+        sid = request.sid
+        if _shell and _active_sid == sid:
+            if not _verify_ws_session(sid):
+                disconnect()
+                return
             try:
                 winsize = struct.pack(
                     "HHHH", int(data["rows"]), int(data["cols"]), 0, 0

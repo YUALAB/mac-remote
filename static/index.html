@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Mac Remote">
     <meta name="theme-color" content="#000000">
     <title>Mac Remote</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/css/xterm.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/css/xterm.css" integrity="sha384-8Xk9wy/gzEDUKrXtrmCFa2bBuK3BpjpDuL/p0SeKQX19Khl/M+lHOgD/CyYf7efP" crossorigin="anonymous">
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="manifest" href="/static/manifest.json">
 </head>
@@ -19,12 +19,14 @@
     <h1>Mac Remote</h1>
     <p>Enter the PIN shown on your Mac</p>
     <div class="pin-input-group" id="pin-group">
-        <input class="pin-digit" type="tel" maxlength="1" inputmode="numeric" autocomplete="off">
-        <input class="pin-digit" type="tel" maxlength="1" inputmode="numeric" autocomplete="off">
-        <input class="pin-digit" type="tel" maxlength="1" inputmode="numeric" autocomplete="off">
-        <input class="pin-digit" type="tel" maxlength="1" inputmode="numeric" autocomplete="off">
-        <input class="pin-digit" type="tel" maxlength="1" inputmode="numeric" autocomplete="off">
-        <input class="pin-digit" type="tel" maxlength="1" inputmode="numeric" autocomplete="off">
+        <input class="pin-digit" type="text" maxlength="1" autocomplete="off" autocapitalize="characters">
+        <input class="pin-digit" type="text" maxlength="1" autocomplete="off" autocapitalize="characters">
+        <input class="pin-digit" type="text" maxlength="1" autocomplete="off" autocapitalize="characters">
+        <input class="pin-digit" type="text" maxlength="1" autocomplete="off" autocapitalize="characters">
+        <input class="pin-digit" type="text" maxlength="1" autocomplete="off" autocapitalize="characters">
+        <input class="pin-digit" type="text" maxlength="1" autocomplete="off" autocapitalize="characters">
+        <input class="pin-digit" type="text" maxlength="1" autocomplete="off" autocapitalize="characters">
+        <input class="pin-digit" type="text" maxlength="1" autocomplete="off" autocapitalize="characters">
     </div>
     <div id="login-error"></div>
     <button class="btn btn-primary" id="login-btn">Login</button>
@@ -58,9 +60,9 @@
 <!-- Toast notification -->
 <div class="toast" id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/lib/xterm.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.11.0/lib/addon-fit.js"></script>
-<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/lib/xterm.js" integrity="sha384-M169f14mRZOXm3hD/v2Ti0ThIT/RnAQagXA9nlE15yHAtrW19gdePJh/HaTzUOe/" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.11.0/lib/addon-fit.js" integrity="sha384-txoiwu4RR2GD3qySbaj+BbzibkLbSJRcfqGYMu6z1EqHil4A2dyBiBW5dlacG6OR" crossorigin="anonymous"></script>
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js" integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+" crossorigin="anonymous"></script>
 <script src="/static/js/app.js"></script>
 <script src="/static/js/terminal.js"></script>
 </body>

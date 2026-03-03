@@ -21,16 +21,32 @@ from auth import verify_pin, logout as auth_logout
 
 app = Flask(__name__, static_folder="static", static_url_path="/static")
 app.secret_key = SECRET_KEY
-app.config["SESSION_COOKIE_SAMESITE"] = "None"
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SECURE"] = True
 
-CORS(app, origins="*", supports_credentials=True)
+# CORS: Cloudflare Tunnel経由のアクセスは同一オリジン扱いのため
+# 信頼できるオリジンのみ許可（ワイルドカード禁止）
+_allowed_origins = [
+    f"http://localhost:{PORT}",
+    f"http://127.0.0.1:{PORT}",
+    "https://yua.aquallc.jp",
+]
+CORS(app, origins=_allowed_origins, supports_credentials=True)
 
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins=_allowed_origins)
 
 # Track tunnel process for cleanup
 _tunnel_proc = None
+
+
+# Cloudflare TunnelのURLを動的に追加
+_tunnel_url = None
+
+def add_tunnel_origin(url: str):
+    global _tunnel_url
+    _tunnel_url = url
+    _allowed_origins.append(url)
 
 
 @app.after_request
@@ -38,6 +54,10 @@ def security_headers(response):
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["Referrer-Policy"] = "no-referrer"
+    # Cloudflare Tunnel URLの動的CORS対応
+    origin = request.headers.get("Origin", "")
+    if origin in _allowed_origins:
+        response.headers["Access-Control-Allow-Origin"] = origin
     return response
 
 
@@ -53,7 +73,7 @@ def login():
     success, result = verify_pin(pin)
     if success:
         session["auth_token"] = result
-        return jsonify({"success": True, "token": result})
+        return jsonify({"success": True})
     return jsonify({"success": False, "error": result}), 401
 
 
@@ -98,6 +118,7 @@ def start_tunnel(port):
             match = re.search(r"(https://[^\s]+\.trycloudflare\.com)", line)
             if match and not public_url:
                 public_url = match.group(1)
+                add_tunnel_origin(public_url)
                 print("\n" + "=" * 50)
                 print("  REMOTE ACCESS (share this URL)")
                 print("=" * 50)
