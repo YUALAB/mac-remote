@@ -67,15 +67,18 @@ body {
 
 .pin-input-group {
     display: flex;
-    gap: 8px;
+    gap: 5px;
     margin-bottom: 16px;
+    width: 100%;
+    max-width: 360px;
 }
 
 .pin-digit {
-    width: 44px;
-    height: 52px;
+    flex: 1;
+    min-width: 0;
+    height: 48px;
     text-align: center;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: bold;
     background: #1a1a3e;
     border: 2px solid #2a2a4a;
@@ -84,6 +87,7 @@ body {
     outline: none;
     transition: border-color 0.2s;
     -webkit-appearance: none;
+    text-transform: uppercase;
 }
 
 .pin-digit:focus {
