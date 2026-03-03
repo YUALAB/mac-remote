@@ -5,6 +5,7 @@ set -e
 
 REPO_URL="https://github.com/YUALAB/mac-remote.git"
 INSTALL_DIR="$HOME/mac-remote"
+VENV_DIR="$HOME/mac-remote/.venv"
 BIN_DIR="$HOME/bin"
 SHELL_RC="$HOME/.zshrc"
 
@@ -74,17 +75,22 @@ else
 fi
 echo "✅ mac-remote ダウンロード完了"
 
-# ─── Python依存関係 ───
+# ─── 仮想環境 & Python依存関係 ───
 echo ""
+if [ ! -d "$VENV_DIR" ]; then
+  echo "📦 Python仮想環境を作成中..."
+  python3 -m venv "$VENV_DIR"
+fi
+source "$VENV_DIR/bin/activate"
 echo "📦 Python依存関係をインストール中..."
-python3 -m pip install -r requirements.txt --quiet 2>/dev/null || pip3 install -r requirements.txt --quiet
+pip install -r requirements.txt --quiet
 echo "✅ 依存関係インストール完了"
 
 # ─── yuatlコマンド作成 ───
 mkdir -p "$BIN_DIR"
 cat > "$BIN_DIR/yuatl" << 'SCRIPT'
 #!/bin/bash
-cd ~/mac-remote && python3 server.py --tunnel
+cd ~/mac-remote && source .venv/bin/activate && python3 server.py --tunnel
 SCRIPT
 chmod +x "$BIN_DIR/yuatl"
 echo "✅ yuatl コマンド作成完了"
