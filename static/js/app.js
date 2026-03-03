@@ -99,7 +99,7 @@ const App = {
         const errorEl = document.getElementById('login-error');
 
         if (pin.length < inputs.length) {
-            errorEl.textContent = 'Please enter all digits';
+            errorEl.textContent = 'PINを全桁入力してください';
             return;
         }
 
